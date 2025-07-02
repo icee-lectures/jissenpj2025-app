@@ -244,14 +244,16 @@ AFRAME.registerComponent('thumbstick-move', {
   init: function () {
     this.direction = new THREE.Vector3();
     this.el.addEventListener('thumbstickmoved', (evt) => {
-      // evt.detail = {x, y}
       this.direction.set(evt.detail.x, 0, evt.detail.y);
       this.direction.multiplyScalar(this.data.speed);
-      // カメラの向きに合わせて移動
       const cam = this.el.object3D;
-      const move = this.direction.clone();
-      cam.getWorldDirection(move);
-      // 前後移動
+      cam.position.x -= evt.detail.x * this.data.speed;
+      cam.position.z -= evt.detail.y * this.data.speed;
+    });
+    this.el.addEventListener('trackpadmoved', (evt) => {
+      this.direction.set(evt.detail.x, 0, evt.detail.y);
+      this.direction.multiplyScalar(this.data.speed);
+      const cam = this.el.object3D;
       cam.position.x -= evt.detail.x * this.data.speed;
       cam.position.z -= evt.detail.y * this.data.speed;
     });
