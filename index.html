@@ -239,9 +239,10 @@
     AFRAME.registerComponent('camera-z-limit', {
       tick: function () {
         const pos = this.el.getAttribute('position');
-        let newZ = pos.z < -3.2 ? -3.2 : pos.z;
-        let newY = pos.y < 1.2 ? 1.2 : pos.y;
-        this.el.setAttribute('position', {x: pos.x, y: newY, z: newZ});
+        // let newZ = pos.z < -3.2 ? -3.2 : pos.z;
+        // let newY = pos.y < 1.2 ? 1.2 : pos.y;
+        // this.el.setAttribute('position', {x: pos.x, y: newY, z: newZ});
+        // 制限なしにする場合は何もしない
       }
     });
     </script>
