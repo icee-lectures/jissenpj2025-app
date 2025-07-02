@@ -79,7 +79,7 @@
       <a-entity light="type: directional; intensity: 0.7" position="1 3 2"></a-entity>
 
       <!-- カメラと移動コントロール + カーソルをa-scene内の最初の方に追加 -->
-      <a-entity camera look-controls wasd-controls position="0 1.6 0"></a-entity>
+      <a-entity camera look-controls wasd-controls position="0 1.6 0" thumbstick-move></a-entity>
 
       <!-- 空（青色） -->
       <a-sky color="#87CEEB"></a-sky>
@@ -238,5 +238,25 @@
       }
     });
     </script>
+    <script>
+AFRAME.registerComponent('thumbstick-move', {
+  schema: {speed: {default: 0.05}},
+  init: function () {
+    this.direction = new THREE.Vector3();
+    this.el.addEventListener('thumbstickmoved', (evt) => {
+      // evt.detail = {x, y}
+      this.direction.set(evt.detail.x, 0, evt.detail.y);
+      this.direction.multiplyScalar(this.data.speed);
+      // カメラの向きに合わせて移動
+      const cam = this.el.object3D;
+      const move = this.direction.clone();
+      cam.getWorldDirection(move);
+      // 前後移動
+      cam.position.x -= evt.detail.x * this.data.speed;
+      cam.position.z -= evt.detail.y * this.data.speed;
+    });
+  }
+});
+</script>
   </body>
 </html>
