@@ -116,7 +116,8 @@
       <!-- 隙間クリック用の透明オブジェクトを20分割で配置 -->
       <a-entity id="gap-colliders"></a-entity>
 
-      <a-entity id="rightHand" laser-controls="hand: right" raycaster="objects: [clickable]">
+      <!-- 右手コントローラー -->
+<a-entity id="rightHand" laser-controls="hand: right" raycaster="objects: .clickable">
         <!-- 棒本体 -->
         <a-cylinder position="0 0 -0.3" radius="0.01" height="0.6" color="#888"></a-cylinder>
         <!-- 先端の球体（コリジョン判定用） -->
@@ -124,7 +125,8 @@
                   dynamic-body="shape: sphere; mass: 0"
                   stick-tip-listener></a-sphere>
       </a-entity>
-      <a-entity laser-controls="hand: left" raycaster="objects: [clickable]"></a-entity>
+      <!-- 左手コントローラー -->
+      <a-entity laser-controls="hand: left" raycaster="objects: .clickable"></a-entity>
 
       <!-- お手本ボタン -->
       <a-box id="demo-btn" position="0.5 1.16 -4" width="0.2" height="0.04" depth="0.1" color="#66ccff" class="clickable">
