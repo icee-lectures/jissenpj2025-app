@@ -6,12 +6,12 @@
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.0.0/dist/aframe-extras.loaders.min.js"></script>
     <script>
-      // あ隙間を20分割し、クリック中にカーソルが重なった部分を埋める
+      // 隙間を20分割し、クリック中にカーソルが重なった部分を埋める
       let isFilling = false;
       AFRAME.registerComponent('fill-gap-on-mousedown', {
         schema: {
           index: {type: 'int'},
-          count: {type: 'int', default: 20}
+          count: {type: 'int', default: 70}
         },
         init: function () {
           var el = this.el;
@@ -41,7 +41,7 @@
            
             // カウントを増やして表示を更新
             fillCount++;
-            fillCountText.setAttribute('value', `埋めた数: ${fillCount} 個 / ${data.count} 個`);
+            fillCountText.setAttribute('value', `Filled blocks: ${fillCount} 個 / ${data.count} 個`);
 
             // タイム計測
             if (fillCount === 1) {
@@ -76,27 +76,14 @@
           // 外部から呼び出せる
           this.fillByStick = fill;
 
-          el.addEventListener('mouseenter', function () {
-            if (isFilling) fill();
-          });
-
+          // クリック・トリガー時のみfill()を呼ぶ
           el.addEventListener('mousedown', function () {
             isFilling = true;
             fill();
           });
-
-          // グローバルでmouseupを監視して埋めモード終了
-          window.addEventListener('mouseup', function () {
-            isFilling = false;
-          });
-
-          // VRコントローラー対応
           el.addEventListener('triggerdown', function () {
             isFilling = true;
             fill();
-          });
-          window.addEventListener('triggerup', function () {
-            isFilling = false;
           });
         }
       });
@@ -118,6 +105,9 @@
   </head>
   <body>
     <a-scene>
+      <a-entity light="type: ambient; intensity: 1"></a-entity>
+      <a-entity light="type: directional; intensity: 0.7" position="1 3 2"></a-entity>
+
       <!-- カメラと移動コントロール + カーソルをa-scene内の最初の方に追加 -->
       <a-entity camera look-controls="pointerLockEnabled: true" wasd-controls="acceleration: 20" position="0 2.0 -2" camera-z-limit>
         <a-cursor></a-cursor>
