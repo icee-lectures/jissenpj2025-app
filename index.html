@@ -670,10 +670,12 @@ function spawnParticles(x, y, z) {
 AFRAME.registerComponent('camera-z-limit', {
   tick: function () {
     const pos = this.el.getAttribute('position');
-    // zが-4より小さくなったら-4に戻す
-    if (pos.z < -3.2) {
-      this.el.setAttribute('position', {x: pos.x, y: pos.y, z: -3.2});
-    }
+    // zが-3.2より小さくなったら-3.2に戻す
+    let newZ = pos.z < -3.2 ? -3.2 : pos.z;
+    // yが1.2より小さくなったら1.2に戻す（地面に埋まらないように）
+    let newY = pos.y < 1.2 ? 1.2 : pos.y;
+    // 必要ならxも制限できます
+    this.el.setAttribute('position', {x: pos.x, y: newY, z: newZ});
   }
 });
     </script>
