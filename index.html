@@ -62,6 +62,16 @@
             isFilling = true;
             fill();
           });
+          // 追加: triggerdown（トリガー押下）にも対応
+          el.addEventListener('triggerdown', function () {
+            isFilling = true;
+            fill();
+          });
+          // 追加: gripdown（グリップ押下）にも対応したい場合
+          el.addEventListener('gripdown', function () {
+            isFilling = true;
+            fill();
+          });
         }
       });
     </script>
