@@ -57,6 +57,11 @@
           //   isFilling = true;
           //   fill();
           // });
+          // 追加: VRコントローラーのレーザークリックにも対応
+          el.addEventListener('click', function () {
+            isFilling = true;
+            fill();
+          });
         }
       });
     </script>
