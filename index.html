@@ -5,6 +5,7 @@
     <title>A-Frame VR 移動テスト</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.0.0/dist/aframe-extras.loaders.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-physics-system@4.0.1/dist/aframe-physics-system.min.js"></script>
     <script>
       // 隙間を20分割し、クリック中にカーソルが重なった部分を埋める
       let isFilling = false;
@@ -48,14 +49,14 @@
           this.fillByStick = fill;
 
           // クリック・トリガー時のみfill()を呼ぶ
-          el.addEventListener('mousedown', function () {
-            isFilling = true;
-            fill();
-          });
-          el.addEventListener('triggerdown', function () {
-            isFilling = true;
-            fill();
-          });
+          // el.addEventListener('mousedown', function () {
+          //   isFilling = true;
+          //   fill();
+          // });
+          // el.addEventListener('triggerdown', function () {
+          //   isFilling = true;
+          //   fill();
+          // });
         }
       });
     </script>
@@ -179,6 +180,7 @@
         box.setAttribute('transparent', 'true');
         box.setAttribute('class', 'clickable');
         box.setAttribute('fill-gap-on-mousedown', `index: ${i}; count: ${count}`);
+        box.setAttribute('static-body', ''); // ←これを追加
         gapColliders.appendChild(box);
       }
 
