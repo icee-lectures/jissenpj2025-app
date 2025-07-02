@@ -1,0 +1,27 @@
+/* VRアプリケーション用スタイル */
+
+/* キャンバス非表示設定 */
+#speed-graph {
+  display: none;
+}
+
+/* ボタンホバー効果（VRでは使用されないが、デスクトップ版での利便性のため） */
+.clickable:hover {
+  transform: scale(1.05);
+  transition: transform 0.1s ease;
+}
+
+/* UI要素のレスポンシブ設定 */
+@media screen and (max-width: 768px) {
+  a-text {
+    width: 0.8 !important;
+  }
+}
+
+/* デバッグ用スタイル（必要に応じてコメントアウト） */
+/*
+.debug {
+  border: 1px solid red;
+  background-color: rgba(255, 0, 0, 0.1);
+}
+*/
