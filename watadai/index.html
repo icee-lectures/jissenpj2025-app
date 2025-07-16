@@ -9,8 +9,9 @@
       AFRAME.registerComponent('thumbstick-move', {
         schema: {speed: {default: 0.07}},
         init: function () {
+          this.cameraEl = document.querySelector('[camera]');
           this.el.addEventListener('thumbstickmoved', (evt) => {
-            const cam = this.el.object3D;
+            const cam = this.cameraEl.object3D;
             const dir = new THREE.Vector3();
             cam.getWorldDirection(dir);
             dir.y = 0;
@@ -38,7 +39,8 @@
       <a-box position="-15 2 0" width="0.2" height="4" depth="30" color="#b0b0b0"></a-box>
       <a-box position="15 2 0" width="0.2" height="4" depth="30" color="#b0b0b0"></a-box>
       <!-- カメラ（ユーザー） -->
-      <a-entity camera look-controls wasd-controls thumbstick-move position="0 1.6 0"></a-entity>
+      <a-entity camera look-controls wasd-controls position="0 1.6 0"></a-entity>
+      <a-entity laser-controls="hand: right" thumbstick-move></a-entity>
     </a-scene>
   </body>
 </html>
