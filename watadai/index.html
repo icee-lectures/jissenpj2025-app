@@ -5,12 +5,27 @@
     <title>VR空間・スティック移動デモ</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script>
-      // スティックで前後左右移動
+      // スティックで前後左右移動＋入力可視化
       AFRAME.registerComponent('thumbstick-move', {
         schema: {speed: {default: 0.07}},
         init: function () {
           this.cameraEl = document.querySelector('[camera]');
+          // 球体をコントローラの子として追加
+          const indicator = document.createElement('a-sphere');
+          indicator.setAttribute('radius', 0.1);
+          indicator.setAttribute('color', '#00FF00');
+          indicator.setAttribute('position', '0 0 -0.3');
+          this.el.appendChild(indicator);
+          this.indicator = indicator;
+
           this.el.addEventListener('thumbstickmoved', (evt) => {
+            // 球体の色を入力方向で変化
+            if (Math.abs(evt.detail.x) > 0.1 || Math.abs(evt.detail.y) > 0.1) {
+              indicator.setAttribute('color', '#FF0000');
+            } else {
+              indicator.setAttribute('color', '#00FF00');
+            }
+            // カメラ移動
             const cam = this.cameraEl.object3D;
             const dir = new THREE.Vector3();
             cam.getWorldDirection(dir);
@@ -22,6 +37,10 @@
             const moveX = evt.detail.x * this.data.speed;
             cam.position.x += dir.x * moveZ + right.x * moveX;
             cam.position.z += dir.z * moveZ + right.z * moveX;
+          });
+          // 離したら色を戻す
+          this.el.addEventListener('thumbstickchanged', () => {
+            indicator.setAttribute('color', '#00FF00');
           });
         }
       });
