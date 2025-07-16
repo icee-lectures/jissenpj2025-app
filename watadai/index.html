@@ -10,22 +10,17 @@
         schema: {speed: {default: 0.07}},
         init: function () {
           this.cameraEl = document.querySelector('[camera]');
-          // 球体をコントローラの子として追加
-          const indicator = document.createElement('a-sphere');
-          indicator.setAttribute('radius', 0.1);
-          indicator.setAttribute('color', '#00FF00');
-          indicator.setAttribute('position', '0 0 -0.3');
-          this.el.appendChild(indicator);
-          this.indicator = indicator;
+          // 既存の球体を取得
+          this.indicator = this.el.querySelector('#stick-indicator');
 
           this.el.addEventListener('thumbstickmoved', (evt) => {
             // 球体の色を入力方向で変化
-            if (Math.abs(evt.detail.x) > 0.1 || Math.abs(evt.detail.y) > 0.1) {
-              indicator.setAttribute('color', '#FF0000');
+            if (Math.abs(evt.detail.x) > 0.1) {
+              this.indicator.setAttribute('color', '#FF0000');
             } else {
-              indicator.setAttribute('color', '#00FF00');
+              this.indicator.setAttribute('color', '#00FF00');
             }
-            // カメラ移動
+            // カメラを左右移動（x方向のみ）
             const cam = this.cameraEl.object3D;
             const dir = new THREE.Vector3();
             cam.getWorldDirection(dir);
@@ -33,14 +28,13 @@
             dir.normalize();
             const right = new THREE.Vector3();
             right.crossVectors(dir, cam.up).normalize();
-            const moveZ = -evt.detail.y * this.data.speed;
             const moveX = evt.detail.x * this.data.speed;
-            cam.position.x += dir.x * moveZ + right.x * moveX;
-            cam.position.z += dir.z * moveZ + right.z * moveX;
+            cam.position.x += right.x * moveX;
+            cam.position.z += right.z * moveX;
           });
           // 離したら色を戻す
           this.el.addEventListener('thumbstickchanged', () => {
-            indicator.setAttribute('color', '#00FF00');
+            this.indicator.setAttribute('color', '#00FF00');
           });
         }
       });
@@ -59,7 +53,9 @@
       <a-box position="15 2 0" width="0.2" height="4" depth="30" color="#b0b0b0"></a-box>
       <!-- カメラ（ユーザー） -->
       <a-entity camera look-controls wasd-controls position="0 1.6 0"></a-entity>
-      <a-entity laser-controls="hand: right" thumbstick-move></a-entity>
+      <a-entity laser-controls="hand: left" thumbstick-move>
+        <a-sphere id="stick-indicator" radius="0.1" color="#00FF00" position="0 0 -0.3"></a-sphere>
+      </a-entity>
     </a-scene>
   </body>
 </html>
