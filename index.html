@@ -18,7 +18,7 @@
           var el = this.el;
           var data = this.data;
           var scene = document.querySelector('a-scene');
-          this.filled = false; // ← thisに持たせる
+          this.filled = false;
 
           // ピースの埋め処理
           function fill() {
@@ -49,29 +49,25 @@
           // 外部から呼び出せる
           this.fillByStick = fill;
 
-          // クリック・トリガー時のみfill()を呼ぶ
-          // el.addEventListener('mousedown', function () {
-          //   isFilling = true;
-          //   fill();
-          // });
-          // el.addEventListener('triggerdown', function () {
-          //   isFilling = true;
-          //   fill();
-          // });
-          // 追加: VRコントローラーのレーザークリックにも対応
+          // クリック・トリガー・グリップ・Aボタン（buttondown: A）に対応
           el.addEventListener('click', function () {
             isFilling = true;
             fill();
           });
-          // 追加: triggerdown（トリガー押下）にも対応
           el.addEventListener('triggerdown', function () {
             isFilling = true;
             fill();
           });
-          // 追加: gripdown（グリップ押下）にも対応したい場合
           el.addEventListener('gripdown', function () {
             isFilling = true;
             fill();
+          });
+          // VRコントローラーのAボタン（buttondownイベントでAボタン判定）
+          el.addEventListener('buttondown', function (evt) {
+            if (evt.detail && evt.detail.id === 'a') {
+              isFilling = true;
+              fill();
+            }
           });
         }
       });
