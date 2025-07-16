@@ -20,33 +20,25 @@
           var scene = document.querySelector('a-scene');
           this.filled = false;
 
-          // ピースの埋め処理
           function fill() {
             if (el.components['fill-gap-on-mousedown'].filled) return;
             var pieceWidth = 0.5 / data.count;
-            // 板の左端を基準にx座標を計算
             var x = -0.65 + pieceWidth / 2 + pieceWidth * data.index;
             var filler = document.createElement('a-box');
             filler.setAttribute('position', `${x} 0.63 -3.96`);
             filler.setAttribute('width', pieceWidth);
             filler.setAttribute('height', '0.02');
             filler.setAttribute('depth', '0.1');
-            filler.setAttribute('color', '#FF0000'); // 赤色
+            filler.setAttribute('color', '#FF0000');
             scene.appendChild(filler);
             el.components['fill-gap-on-mousedown'].filled = true;
-            // 0.1秒後にfillerを黒くする
             setTimeout(() => {
               filler.setAttribute('color', '#000000');
             }, 100);
-            // 隙間を埋める処理の直後
-            // spawnParticles(x, 1.11, -3.96); // パーティクル演出も不要ならコメントアウト
-
-            // カウントを増やして表示を更新
             fillCount++;
             fillCountText.setAttribute('value', `Filled blocks: ${fillCount} 個 / ${data.count} 個`);
           }
 
-          // 外部から呼び出せる
           this.fillByStick = fill;
 
           // クリック・トリガー・グリップ・Aボタン（buttondown: A）に対応
@@ -55,18 +47,15 @@
             fill();
           });
           el.addEventListener('triggerdown', function () {
-            isFilling = true;
-            fill();
+            el.emit('click'); // triggerdownでclickイベントを発火
           });
           el.addEventListener('gripdown', function () {
-            isFilling = true;
-            fill();
+            el.emit('click'); // gripdownでclickイベントを発火
           });
-          // VRコントローラーのAボタン（buttondownイベントでAボタン判定）
+          // VRコントローラーのAボタン検知
           el.addEventListener('buttondown', function (evt) {
-            if (evt.detail && evt.detail.id === 'a') {
-              isFilling = true;
-              fill();
+            if (evt.detail && (evt.detail.id === 'a' || evt.detail.id === 1)) {
+              el.emit('click'); // Aボタンでclickイベントを発火
             }
           });
         }
