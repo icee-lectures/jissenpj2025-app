@@ -42,21 +42,19 @@
       });
       AFRAME.registerComponent('show-cube-on-trigger', {
         init: function () {
-          // キューブを生成して右手の上に配置
-          this.cube = document.createElement('a-box');
-          this.cube.setAttribute('position', '0 0.2 0');
-          this.cube.setAttribute('depth', '0.1');
-          this.cube.setAttribute('height', '0.1');
-          this.cube.setAttribute('width', '0.1');
-          this.cube.setAttribute('color', '#2196F3');
-          this.cube.setAttribute('visible', 'false');
-          this.el.appendChild(this.cube);
+          // 球体を生成して右手の上に配置
+          this.sphere = document.createElement('a-sphere');
+          this.sphere.setAttribute('position', '0 0.2 0');
+          this.sphere.setAttribute('radius', '0.07');
+          this.sphere.setAttribute('color', '#2196F3');
+          this.sphere.setAttribute('visible', 'false');
+          this.el.appendChild(this.sphere);
 
           this.el.addEventListener('triggerdown', () => {
-            this.cube.setAttribute('visible', 'true');
+            this.sphere.setAttribute('visible', 'true');
           });
           this.el.addEventListener('triggerup', () => {
-            this.cube.setAttribute('visible', 'false');
+            this.sphere.setAttribute('visible', 'false');
           });
         }
       });
