@@ -13,6 +13,7 @@
           this.indicator = this.el.querySelector('#stick-indicator');
 
           this.el.addEventListener('thumbstickmoved', (evt) => {
+            console.log('thumbstickmoved', evt.detail);
             // スティック方向で色をHSVで変化
             const angle = Math.atan2(evt.detail.y, evt.detail.x); // -π～π
             const hue = ((angle / (2 * Math.PI)) + 0.5) * 360; // 0～360
@@ -72,9 +73,9 @@
       <!-- 地面 -->
       <a-plane rotation="-90 0 0" width="30" height="30" color="#8B5A2B"></a-plane>
       <!-- テキスト -->
-      <a-text value="3" position="0 2 -2" color="#222" width="2"></a-text>
+      <a-text value="4" position="0 2 -2" color="#222" width="2"></a-text>
       <!-- カメラ（ユーザー） -->
-      <a-entity camera look-controls wasd-controls position="0 1.6 0"></a-entity>
+      <a-entity camera look-controls position="0 1.6 0"></a-entity>
       <a-entity laser-controls="hand: left" thumbstick-move>
         <a-sphere id="stick-indicator" radius="0.1" color="#00FF00" position="0 0 -0.3"></a-sphere>
       </a-entity>
