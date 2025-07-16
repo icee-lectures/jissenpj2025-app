@@ -10,17 +10,22 @@
         schema: {speed: {default: 0.07}},
         init: function () {
           this.cameraEl = document.querySelector('[camera]');
-          // 既存の球体を取得
           this.indicator = this.el.querySelector('#stick-indicator');
 
           this.el.addEventListener('thumbstickmoved', (evt) => {
-            console.log('thumbstickmoved', evt.detail);
-            // 球体の色を入力方向で変化
-            if (Math.abs(evt.detail.x) > 0.1 || Math.abs(evt.detail.y) > 0.1) {
-              this.indicator.setAttribute('color', '#FF0000');
-            } else {
-              this.indicator.setAttribute('color', '#00FF00');
+            // スティック方向で色をHSVで変化
+            const angle = Math.atan2(evt.detail.y, evt.detail.x); // -π～π
+            const hue = ((angle / (2 * Math.PI)) + 0.5) * 360; // 0～360
+            const sat = Math.min(1, Math.sqrt(evt.detail.x * evt.detail.x + evt.detail.y * evt.detail.y));
+            // HSV→RGB変換
+            function hsvToRgb(h, s, v) {
+              let f = (n, k = (n + h / 60) % 6) => v - v * s * Math.max(Math.min(k, 4 - k, 1), 0);
+              return [f(5), f(3), f(1)];
             }
+            const rgb = hsvToRgb(hue, sat, 1);
+            const color = `rgb(${Math.round(rgb[0]*255)},${Math.round(rgb[1]*255)},${Math.round(rgb[2]*255)})`;
+            this.indicator.setAttribute('color', color);
+
             // カメラ移動
             const cam = this.cameraEl.object3D;
             const dir = new THREE.Vector3();
@@ -34,7 +39,7 @@
             cam.position.x += dir.x * moveZ + right.x * moveX;
             cam.position.z += dir.z * moveZ + right.z * moveX;
           });
-          // 離したら色を戻す
+
           this.el.addEventListener('thumbstickchanged', () => {
             this.indicator.setAttribute('color', '#00FF00');
           });
@@ -44,8 +49,8 @@
         init: function () {
           // 球体を生成して右手の上に配置
           this.sphere = document.createElement('a-sphere');
-          this.sphere.setAttribute('position', '0 0.2 0');
-          this.sphere.setAttribute('radius', '0.07');
+          this.sphere.setAttribute('position', '0 0 0.2');
+          this.sphere.setAttribute('radius', '0.01');
           this.sphere.setAttribute('color', '#2196F3');
           this.sphere.setAttribute('visible', 'false');
           this.el.appendChild(this.sphere);
@@ -67,7 +72,7 @@
       <!-- 地面 -->
       <a-plane rotation="-90 0 0" width="30" height="30" color="#8B5A2B"></a-plane>
       <!-- テキスト -->
-      <a-text value="2" position="0 2 -2" color="#222" width="2"></a-text>
+      <a-text value="3" position="0 2 -2" color="#222" width="2"></a-text>
       <!-- カメラ（ユーザー） -->
       <a-entity camera look-controls wasd-controls position="0 1.6 0"></a-entity>
       <a-entity laser-controls="hand: left" thumbstick-move>
