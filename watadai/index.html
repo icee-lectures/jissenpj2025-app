@@ -2,305 +2,43 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>A-Frame VR 移動テスト</title>
+    <title>VR空間・スティック移動デモ</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.0.0/dist/aframe-extras.loaders.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-physics-system@4.0.1/dist/aframe-physics-system.min.js"></script>
     <script>
-      // 隙間を20分割し、クリック中にカーソルが重なった部分を埋める
-      let isFilling = false;
-      AFRAME.registerComponent('fill-gap-on-mousedown', {
-        schema: {
-          index: {type: 'int'},
-          count: {type: 'int', default: 70}
-        },
+      // スティックで前後左右移動
+      AFRAME.registerComponent('thumbstick-move', {
+        schema: {speed: {default: 0.07}},
         init: function () {
-          var el = this.el;
-          var data = this.data;
-          var scene = document.querySelector('a-scene');
-          this.filled = false; // ← thisに持たせる
-
-          // ピースの埋め処理
-          function fill() {
-            if (el.components['fill-gap-on-mousedown'].filled) return;
-            var pieceWidth = 0.5 / data.count;
-            var x = -0.25 + pieceWidth / 2 + pieceWidth * data.index;
-            var filler = document.createElement('a-box');
-            filler.setAttribute('position', `${x} 1.11 -3.96`);
-            filler.setAttribute('width', pieceWidth);
-            filler.setAttribute('height', '0.02');
-            filler.setAttribute('depth', '0.05');
-            filler.setAttribute('color', '#FF0000'); // 赤色
-            scene.appendChild(filler);
-            el.components['fill-gap-on-mousedown'].filled = true;
-            // 0.1秒後にfillerを黒くする
-            setTimeout(() => {
-              filler.setAttribute('color', '#000000');
-            }, 100);
-            // 隙間を埋める処理の直後
-            // spawnParticles(x, 1.11, -3.96); // パーティクル演出も不要ならコメントアウト
-
-            // カウントを増やして表示を更新
-            fillCount++;
-            fillCountText.setAttribute('value', `Filled blocks: ${fillCount} 個 / ${data.count} 個`);
-          }
-
-          // 外部から呼び出せる
-          this.fillByStick = fill;
-
-          // クリック・トリガー時のみfill()を呼ぶ
-          // el.addEventListener('mousedown', function () {
-          //   isFilling = true;
-          //   fill();
-          // });
-          // el.addEventListener('triggerdown', function () {
-          //   isFilling = true;
-          //   fill();
-          // });
-          // 追加: VRコントローラーのレーザークリックにも対応
-          el.addEventListener('click', function () {
-            isFilling = true;
-            fill();
-          });
-          // 追加: triggerdown（トリガー押下）にも対応
-          el.addEventListener('triggerdown', function () {
-            isFilling = true;
-            fill();
-          });
-          // 追加: gripdown（グリップ押下）にも対応したい場合
-          el.addEventListener('gripdown', function () {
-            isFilling = true;
-            fill();
-          });
-        }
-      });
-    </script>
-    <script>
-      // 棒の先端がピースに触れたら埋める
-      let isTouchFilling = false;
-      AFRAME.registerComponent('stick-tip-listener', {
-        init: function () {
-          this.el.addEventListener('collidestart', function (evt) {
-            if (evt.detail.body.el && evt.detail.body.el.components['fill-gap-on-mousedown']) {
-              evt.detail.body.el.components['fill-gap-on-mousedown'].fillByStick();
-            }
+          this.el.addEventListener('thumbstickmoved', (evt) => {
+            const cam = this.el.object3D;
+            const dir = new THREE.Vector3();
+            cam.getWorldDirection(dir);
+            dir.y = 0;
+            dir.normalize();
+            const right = new THREE.Vector3();
+            right.crossVectors(dir, cam.up).normalize();
+            const moveZ = -evt.detail.y * this.data.speed;
+            const moveX = evt.detail.x * this.data.speed;
+            cam.position.x += dir.x * moveZ + right.x * moveX;
+            cam.position.z += dir.z * moveZ + right.z * moveX;
           });
         }
       });
     </script>
   </head>
   <body>
-    <a-scene>
-      <a-entity light="type: ambient; intensity: 1"></a-entity>
-      <a-entity light="type: directional; intensity: 0.7" position="1 3 2"></a-entity>
-
-      <!-- カメラとカーソル -->
-      <a-entity camera look-controls position="0 1.6 -3.2" thumbstick-move wasd-controls>
-        <a-entity 
-          cursor="fuse: false; rayOrigin: entity"
-          position="0 0 -0.2"
-          geometry="primitive: ring; radiusInner: 0.001; radiusOuter: 0.002"
-          material="color: #FF0000; shader: flat">
-        </a-entity>
-      </a-entity>
-
-      <!-- 空（青色） -->
+    <a-scene vr-mode-ui="enabled: true">
+      <!-- 空 -->
       <a-sky color="#87CEEB"></a-sky>
-
-      <!-- 地面（緑色） -->
-      <a-plane rotation="-90 0 0" width="100" height="100" color="#228B22"></a-plane>
-
-      <!-- 机の上の2枚の板（間に小さい隙間） -->
-      <a-box position="0 1.11 -4.03" width="0.5" height="0.02" depth="0.1" color="#D2B48C"></a-box>
-      <a-box position="0 1.11 -3.89" width="0.5" height="0.02" depth="0.1" color="#DEB887"></a-box>
-      <!-- 隙間クリック用の透明オブジェクトを20分割で配置 -->
-      <a-entity id="gap-colliders"></a-entity>
-
-      <a-entity id="rightHand" laser-controls="hand: right" raycaster="objects: [clickable]">
-        <!-- 棒本体 -->
-        <a-cylinder position="0 0 -0.3" radius="0.01" height="0.6" color="#888"></a-cylinder>
-        <!-- 先端の球体（コリジョン判定用） -->
-        <a-sphere id="stickTip" position="0 0 -0.3" radius="0.03" color="#F00"
-                  dynamic-body="shape: sphere; mass: 0"
-                  stick-tip-listener></a-sphere>
-        <!-- 溶接.glbを右手に固定 -->
-        <a-entity id="weldModel"
-          gltf-model="溶接.glb"
-          position="0 0 -0.15"
-          scale="0.2 0.2 0.2"
-          rotation="0 0 0">
-          <!-- arkModelを溶接.glbの子要素として追加 -->
-          <a-entity
-            id="arkModel"
-            gltf-model="ark.glb"
-            position="0 0 0.1"
-            scale="0.01 0.01 0.01">
-          </a-entity>
-        </a-entity>
-      </a-entity>
-      <a-entity laser-controls="hand: left" raycaster="objects: [clickable]"></a-entity>
-
-      <!-- お手本ボタン -->
-      <a-box id="demo-btn" position="0.5 1.16 -4" width="0.2" height="0.04" depth="0.1" color="#66ccff" class="clickable">
-        <a-text value="お手本" align="center" color="#000" position="0 0.03 0"></a-text>
-      </a-box>
-      <a-text value="お手本を再現" align="center" color="#000" position="0.5 1.30 -3.95" width="1"></a-text>
-
-      <!-- リセットボタン -->
-      <a-box id="reset-btn" position="0.8 1.16 -4" width="0.2" height="0.04" depth="0.1" color="#ffcc00" class="clickable">
-        <a-text value="リセット" align="center" color="#000" position="0 0.03 0"></a-text>
-      </a-box>
-      <a-text value="やり直し" align="center" color="#000" position="0.8 1.30 -3.95" width="100"></a-text>
-
-      <!-- リプレイボタン -->
-      <a-box id="replay-btn" position="0.5 1.16 -3.8" width="0.2" height="0.04" depth="0.1" color="#ff8888" class="clickable">
-        <a-text value="リプレイ" align="center" color="#000" position="0 0.03 0"></a-text>
-      </a-box>
-      <a-text value="動きを再生" align="center" color="#000" position="0.5 1.30 -3.75" width="1"></a-text>
-
-      <!-- 埋めた数を表示するテキスト（例：画面左上） -->
-      <a-text id="fill-count-text" value="埋めた数: 0 / 20" position="-0.9 2.0 -4.5" color="#222" width="2"></a-text>
-
-      <!-- グラフ用canvas（非表示） -->
-      <canvas id="speed-graph" width="300" height="150" style="display:none"></canvas>
-      <!-- グラフ表示用a-plane（画面右上あたりに表示例） -->
-      <a-plane id="graph-plane" position="0.8 2.0 -4.5" width="0.6" height="0.3" material="side:double"></a-plane>
-
-      <!-- 机の上に仮想カメラを設置 -->
-      <a-entity id="table-cam" camera="active: false" position="0 1.3 -3.97" rotation="-90 0 0"></a-entity>
-      <a-plane id="screen" position="1.5 1.5 -4" width="1" height="0.75" tablecam-to-screen></a-plane>
-
-      <!-- 横からのカメラ（隙間の真横から撮影） -->
-      <a-entity id="side-cam" camera="active: false" position="-0.3 1.13 -3.96" rotation="0 -90 0"></a-entity>
-      <!-- 横カメラの映像を映すスクリーン（例：左側に表示） -->
-      <a-plane id="side-screen" position="-1.5 1.5 -4" width="1" height="0.75" sidecam-to-screen></a-plane>
-
-      <!-- ...a-scene内の好きな位置に追加... -->
-<a-entity stl-model="src: url(Part1.STL)" position="-0.25 1.13 -4" scale="0.02 0.02 0.02" color="#ff8800"></a-entity>
-<a-entity stl-model="src: url(Part2.STL)" position="0.25 1.13 -4" scale="0.02 0.02 0.02" color="#0088ff"></a-entity>
-<!-- 机の上あたりにGLBモデルを追加 -->
-<a-entity
-  id="deskModel"
-  gltf-model="deskModel.glb"
-  position="0 1.15 -4.2"
-  scale="1.3 1.3 1.3">
-</a-entity>
+      <!-- 地面 -->
+      <a-plane rotation="-90 0 0" width="30" height="30" color="#8B5A2B"></a-plane>
+      <!-- 壁 -->
+      <a-box position="0 2 -15" width="30" height="4" depth="0.2" color="#b0b0b0"></a-box>
+      <a-box position="0 2 15" width="30" height="4" depth="0.2" color="#b0b0b0"></a-box>
+      <a-box position="-15 2 0" width="0.2" height="4" depth="30" color="#b0b0b0"></a-box>
+      <a-box position="15 2 0" width="0.2" height="4" depth="30" color="#b0b0b0"></a-box>
+      <!-- カメラ（ユーザー） -->
+      <a-entity camera look-controls wasd-controls thumbstick-move position="0 1.6 0"></a-entity>
     </a-scene>
-    <script>
-      // 隙間部分を20分割して透明オブジェクトを配置（x方向に分割）
-      const count = 70;
-      const gapColliders = document.getElementById('gap-colliders');
-
-      // ★ここでグローバル変数を宣言
-      let fillCount = 0;
-      const fillCountText = document.getElementById('fill-count-text');
-
-      for (let i = 0; i < count; i++) {
-        // 1ピースのwidth
-        const pieceWidth = 0.5 / count;
-        // このピースの中心x座標
-        const x = -0.25 + pieceWidth / 2 + pieceWidth * i;
-        const box = document.createElement('a-box');
-        box.setAttribute('position', `${x} 1.11 -4`);
-        box.setAttribute('width', pieceWidth);
-        box.setAttribute('height', '0.03');
-        box.setAttribute('depth', '0.18');
-        box.setAttribute('opacity', '0');
-        box.setAttribute('transparent', 'true');
-        box.setAttribute('class', 'clickable');
-        box.setAttribute('fill-gap-on-mousedown', `index: ${i}; count: ${count}`);
-        box.setAttribute('static-body', ''); // ←これを追加
-        gapColliders.appendChild(box);
-      }
-
-      // リセットボタンの処理
-      document.getElementById('reset-btn').addEventListener('click', function () {
-        // 埋めたa-box（fill-gap-on-mousedownで生成されたもの）を削除
-        document.querySelectorAll('a-box').forEach(box => {
-          const color = box.getAttribute('color');
-          if (color === '#FF0000' || color === '#000000') {
-            box.parentNode.removeChild(box);
-          }
-        });
-        // 各fill-gap-on-mousedownのfilled状態もリセット
-        document.querySelectorAll('[fill-gap-on-mousedown]').forEach(el => {
-          if (el.components['fill-gap-on-mousedown']) {
-            el.components['fill-gap-on-mousedown'].filled = false;
-          }
-        });
-        // カウントもリセット
-        fillCount = 0;
-        fillCountText.setAttribute('value', `埋めた数: 0 / ${count}`);
-      });
-
-      // お手本ボタンの処理
-      document.getElementById('demo-btn').addEventListener('click', function () {
-        document.getElementById('reset-btn').click();
-
-        const pieces = Array.from(document.querySelectorAll('[fill-gap-on-mousedown]'));
-        let i = 0;
-
-        function fillNext() {
-          if (i >= pieces.length) return;
-          const comp = pieces[i].components['fill-gap-on-mousedown'];
-          if (comp && !comp.filled) {
-            comp.el.emit('mousedown');
-            i++;
-            setTimeout(fillNext, 200);
-          } else {
-            i++;
-            fillNext();
-          }
-        }
-
-        if (pieces.length > 0) {
-          setTimeout(fillNext, 500);
-        }
-      });
-    </script>
-    <script>
-    // カメラのz座標が-4より小さく（奥へ）行けないように制限
-    AFRAME.registerComponent('camera-z-limit', {
-      tick: function () {
-        const pos = this.el.getAttribute('position');
-        // let newZ = pos.z < -3.2 ? -3.2 : pos.z;
-        // let newY = pos.y < 1.2 ? 1.2 : pos.y;
-        // this.el.setAttribute('position', {x: pos.x, y: newY, z: newZ});
-        // 制限なしにする場合は何もしない
-      }
-    });
-    </script>
-    <script>
-AFRAME.registerComponent('thumbstick-move', {
-  schema: {speed: {default: 0.05}},
-  init: function () {
-    this.el.addEventListener('thumbstickmoved', (evt) => {
-      const cam = this.el.object3D;
-      // カメラの向きに合わせて前後左右移動
-      const dir = new THREE.Vector3();
-      cam.getWorldDirection(dir);
-      // 前後（z方向）
-      const moveZ = -evt.detail.y * this.data.speed;
-      // 左右（x方向）: カメラの右ベクトルを計算
-      const right = new THREE.Vector3();
-      right.crossVectors(dir, cam.up).normalize();
-      const moveX = evt.detail.x * this.data.speed;
-      cam.position.x += dir.x * moveZ + right.x * moveX;
-      cam.position.z += dir.z * moveZ + right.z * moveX;
-    });
-    this.el.addEventListener('trackpadmoved', (evt) => {
-      const cam = this.el.object3D;
-      const dir = new THREE.Vector3();
-      cam.getWorldDirection(dir);
-      const moveZ = -evt.detail.y * this.data.speed;
-      const right = new THREE.Vector3();
-      right.crossVectors(dir, cam.up).normalize();
-      const moveX = evt.detail.x * this.data.speed;
-      cam.position.x += dir.x * moveZ + right.x * moveX;
-      cam.position.z += dir.z * moveZ + right.z * moveX;
-    });
-  }
-});
-</script>
   </body>
 </html>
