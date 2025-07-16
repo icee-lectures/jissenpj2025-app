@@ -69,12 +69,13 @@
       <!-- 地面 -->
       <a-plane rotation="-90 0 0" width="30" height="30" color="#8B5A2B"></a-plane>
       <!-- テキスト -->
-      <a-text value="1" position="0 2 -2" color="#222" width="2"></a-text>
+      <a-text value="2" position="0 2 -2" color="#222" width="2"></a-text>
       <!-- カメラ（ユーザー） -->
       <a-entity camera look-controls wasd-controls position="0 1.6 0"></a-entity>
       <a-entity laser-controls="hand: left" thumbstick-move>
         <a-sphere id="stick-indicator" radius="0.1" color="#00FF00" position="0 0 -0.3"></a-sphere>
       </a-entity>
+      <a-entity laser-controls="hand: right" show-cube-on-trigger></a-entity>
     </a-scene>
   </body>
 </html>
