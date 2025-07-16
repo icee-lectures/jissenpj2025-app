@@ -24,12 +24,13 @@
           function fill() {
             if (el.components['fill-gap-on-mousedown'].filled) return;
             var pieceWidth = 0.5 / data.count;
-            var x = -0.25 + pieceWidth / 2 + pieceWidth * data.index;
+            // 板の左端を基準にx座標を計算
+            var x = -0.65 + pieceWidth / 2 + pieceWidth * data.index;
             var filler = document.createElement('a-box');
-            filler.setAttribute('position', `${x} 1.11 -3.96`);
+            filler.setAttribute('position', `${x} 0.63 -3.96`);
             filler.setAttribute('width', pieceWidth);
             filler.setAttribute('height', '0.02');
-            filler.setAttribute('depth', '0.05');
+            filler.setAttribute('depth', '0.1');
             filler.setAttribute('color', '#FF0000'); // 赤色
             scene.appendChild(filler);
             el.components['fill-gap-on-mousedown'].filled = true;
@@ -215,20 +216,20 @@
       const fillCountText = document.getElementById('fill-count-text');
 
       for (let i = 0; i < count; i++) {
-        // 1ピースのwidth
+        // ピースと同じx座標計算
         const pieceWidth = 0.5 / count;
-        // このピースの中心x座標
-        const x = -0.25 + pieceWidth / 2 + pieceWidth * i;
+        const x = -0.65 + pieceWidth / 2 + pieceWidth * i;
+        // ピースと同じy, z, height, depth
         const box = document.createElement('a-box');
-        box.setAttribute('position', `${x} 1.11 -4`);
+        box.setAttribute('position', `${x} 0.63 -3.96`);
         box.setAttribute('width', pieceWidth);
-        box.setAttribute('height', '0.03');
-        box.setAttribute('depth', '0.18');
+        box.setAttribute('height', '0.02');
+        box.setAttribute('depth', '0.1');
         box.setAttribute('opacity', '0');
         box.setAttribute('transparent', 'true');
         box.setAttribute('class', 'clickable');
         box.setAttribute('fill-gap-on-mousedown', `index: ${i}; count: ${count}`);
-        box.setAttribute('static-body', ''); // ←これを追加
+        box.setAttribute('static-body', '');
         gapColliders.appendChild(box);
       }
 
