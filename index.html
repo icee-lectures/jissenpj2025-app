@@ -111,8 +111,8 @@
       <a-plane rotation="-90 0 0" width="100" height="100" color="#228B22"></a-plane>
 
       <!-- 机の上の2枚の板（間に小さい隙間） -->
-      <a-box position="0 1.11 -4.03" width="0.5" height="0.02" depth="0.1" color="#D2B48C"></a-box>
-      <a-box position="0 1.11 -3.89" width="0.5" height="0.02" depth="0.1" color="#DEB887"></a-box>
+      <a-box position="-0.4 0.65 -4.03" width="0.5" height="0.02" depth="0.1" color="#D2B48C"></a-box>
+      <a-box position="-0.4 0.65 -3.89" width="0.5" height="0.02" depth="0.1" color="#DEB887"></a-box>
       <!-- 隙間クリック用の透明オブジェクトを20分割で配置 -->
       <a-entity id="gap-colliders"></a-entity>
 
@@ -127,19 +127,19 @@
       <a-entity laser-controls="hand: left" raycaster="objects: [clickable]"></a-entity>
 
       <!-- お手本ボタン -->
-      <a-box id="demo-btn" position="0.5 1.16 -4" width="0.2" height="0.04" depth="0.1" color="#66ccff" class="clickable">
+      <a-box id="demo-btn" position="0 0.65 -4" width="0.2" height="0.04" depth="0.1" color="#66ccff" class="clickable">
         <a-text value="お手本" align="center" color="#000" position="0 0.03 0"></a-text>
       </a-box>
       <a-text value="お手本を再現" align="center" color="#000" position="0.5 1.30 -3.95" width="1"></a-text>
 
       <!-- リセットボタン -->
-      <a-box id="reset-btn" position="0.8 1.16 -4" width="0.2" height="0.04" depth="0.1" color="#ffcc00" class="clickable">
+      <a-box id="reset-btn" position="0.3 0.65 -4" width="0.2" height="0.04" depth="0.1" color="#ffcc00" class="clickable">
         <a-text value="リセット" align="center" color="#000" position="0 0.03 0"></a-text>
       </a-box>
       <a-text value="やり直し" align="center" color="#000" position="0.8 1.30 -3.95" width="100"></a-text>
 
       <!-- リプレイボタン -->
-      <a-box id="replay-btn" position="0.5 1.16 -3.8" width="0.2" height="0.04" depth="0.1" color="#ff8888" class="clickable">
+      <a-box id="replay-btn" position="0 0.65 -3.8" width="0.2" height="0.04" depth="0.1" color="#ff8888" class="clickable">
         <a-text value="リプレイ" align="center" color="#000" position="0 0.03 0"></a-text>
       </a-box>
       <a-text value="動きを再生" align="center" color="#000" position="0.5 1.30 -3.75" width="1"></a-text>
@@ -168,14 +168,14 @@
 <a-entity
   id="deskModel"
   gltf-model="deskModel.glb"
-  position="0 1.15 -4.2"
-  scale="1.3 1.3 1.3">
+  position="0 0.65 -4.2"
+  scale="1.6 1.6 1.6">
 </a-entity>
 <!-- arkModelの追加 -->
 <a-entity
   id="arkModel"
   gltf-model="ark.blend.glb"
-  position="0.53 1.52 -4.45"
+  position="0.53 1.17 -4.45"
   scale="0.01 0.01 0.01">
 </a-entity>
     </a-scene>
