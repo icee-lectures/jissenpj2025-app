@@ -40,6 +40,26 @@
           });
         }
       });
+      AFRAME.registerComponent('show-cube-on-trigger', {
+        init: function () {
+          // キューブを生成して右手の上に配置
+          this.cube = document.createElement('a-box');
+          this.cube.setAttribute('position', '0 0.2 0');
+          this.cube.setAttribute('depth', '0.1');
+          this.cube.setAttribute('height', '0.1');
+          this.cube.setAttribute('width', '0.1');
+          this.cube.setAttribute('color', '#2196F3');
+          this.cube.setAttribute('visible', 'false');
+          this.el.appendChild(this.cube);
+
+          this.el.addEventListener('triggerdown', () => {
+            this.cube.setAttribute('visible', 'true');
+          });
+          this.el.addEventListener('triggerup', () => {
+            this.cube.setAttribute('visible', 'false');
+          });
+        }
+      });
     </script>
   </head>
   <body>
@@ -48,11 +68,8 @@
       <a-sky color="#87CEEB"></a-sky>
       <!-- 地面 -->
       <a-plane rotation="-90 0 0" width="30" height="30" color="#8B5A2B"></a-plane>
-      <!-- 壁 -->
-      <a-box position="0 2 -15" width="30" height="4" depth="0.2" color="#b0b0b0"></a-box>
-      <a-box position="0 2 15" width="30" height="4" depth="0.2" color="#b0b0b0"></a-box>
-      <a-box position="-15 2 0" width="0.2" height="4" depth="30" color="#b0b0b0"></a-box>
-      <a-box position="15 2 0" width="0.2" height="4" depth="30" color="#b0b0b0"></a-box>
+      <!-- テキスト -->
+      <a-text value="1" position="0 2 -2" color="#222" width="2"></a-text>
       <!-- カメラ（ユーザー） -->
       <a-entity camera look-controls wasd-controls position="0 1.6 0"></a-entity>
       <a-entity laser-controls="hand: left" thumbstick-move>
